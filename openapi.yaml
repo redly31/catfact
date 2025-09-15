@@ -1,0 +1,97 @@
+openapi: 3.1.0
+info:
+  title: Cat Facts API
+  version: 1.0.0
+  description: API для получения фактов о кошках с пагинацией
+
+servers:
+  - url: https://catfact.ninja
+    description: Основной сервер
+
+paths:
+  /fact:
+    get:
+      summary: Получить случайный факт
+      operationId: getFact
+      responses:
+        "200":
+          description: Случайный факт
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Fact"
+
+  /facts:
+    get:
+      summary: Получить все факты с пагинацией
+      operationId: getFacts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Номер страницы
+      responses:
+        "200":
+          description: Пагинированный список фактов
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedFacts"
+
+components:
+  schemas:
+    Fact:
+      type: object
+      properties:
+        fact:
+          type: string
+        length:
+          type: integer
+      required:
+        - fact
+        - length
+
+    PaginatedFacts:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Fact"
+        first_page_url:
+          type: string
+        last_page_url:
+          type: string
+        links:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                nullable: true
+              label:
+                type: string
+              active:
+                type: boolean
+            required:
+              - url
+              - label
+              - active
+        next_page_url:
+          type: string
+          nullable: true
+        prev_page_url:
+          type: string
+          nullable: true
+        from:
+          type: integer
+        to:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
